@@ -1,0 +1,25 @@
+###Take variable value in Connection Log File Name
+$ConnectionLogFileName="{{Var_file_download_dir}}\{{Web_ping_connection_test}}"
+
+
+[string[]]$apserverip=@()
+$resource_file_name= "{{Var_file_download_dir}}\{{ts_resources_json}}"
+$JSON = Get-Content $resource_file_name | Out-String | ConvertFrom-Json
+$webapserverip= @()
+$webapserverip = $JSON.system.resources.tiers[0].{{server_type}}.servers
+
+For ($i=0; $i -lt $webapserverip.Length; $i++){
+
+	### Get server ip from resource.jason
+    $apserverip= $JSON.system.resources.tiers[0].{{server_type}}.servers[$i].networkInterfaces.privateIp
+    
+	if($apserverip -ne $null)
+    {
+		### ping app server ip 
+        ping -n 4 $apserverip >> $ConnectionLogFileName
+    }
+    else
+    {
+        Write-Host "IP is not valid"
+    }
+}

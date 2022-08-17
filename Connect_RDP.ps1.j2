@@ -1,0 +1,8 @@
+$exe_time=(get-date).AddMinutes(2).ToString("HH:mm")
+$Trigger= New-ScheduledTaskTrigger -At $exe_time -Once
+# Specify target machine's user
+$User= "{{Target_user_name}}" 
+# Specify action for RDP test script path
+$Action= New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "{{cache_dir}}\{{Var_RDP_Communication_file}}" 
+# Register ScheduledTask for RDP test connection
+Register-ScheduledTask -TaskName "{{Var_Sheduled_Task_Name}}" -Trigger $Trigger -User $User -Action $Action -RunLevel {{Var_Run_level}} -Force 

@@ -1,0 +1,47 @@
+﻿Function Write-Log 
+{
+[CmdletBinding()]
+    Param(
+            [Parameter(Mandatory=$False)]
+            [ValidateSet("INFO","WARN","ERROR","FATAL","DEBUG")]
+            [String]
+            $Level = "INFO",
+            [Parameter(Mandatory=$True)]
+            [string]
+            $Message,
+            [Parameter(Mandatory=$False)]
+            [string]
+            $logfile
+        )
+
+        
+        $content = "[$Stamp] [$Level] $Message"
+
+        if($logfile)
+        {
+            
+            Add-Content $logfile -Value $content
+        }
+        else
+        {
+            Write-Output $content
+        }
+}
+
+function Get-CurrentLineNumber
+{
+    $MyInvocation.ScriptLineNumber
+}
+    $ScriptDirectory = "{{cache_dir}}" 
+    
+	$InstallerLogFileName="$ScriptDirectory\fileserver_check_write.txt"
+	
+try 
+{
+    Copy-Item -Path '{{shared_dir}}\{{sample_file_name}}' -Destination \\{{file_server_ip}}\{{file_server_shared_folder}}
+	Write-Log "INFO" "[$(Get-CurrentLineNumber)]  'File Write successfully.' "$InstallerLogFileName""  
+}
+catch
+{
+    Write-Log "INFO" "[$(Get-CurrentLineNumber)]  'Exception Occur, Can not Write and Execute File.' "$InstallerLogFileName""
+}

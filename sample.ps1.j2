@@ -1,0 +1,37 @@
+Function Write-Log 
+{
+[CmdletBinding()]
+    Param(
+            [Parameter(Mandatory=$False)]
+            [ValidateSet("INFO","WARN","ERROR","FATAL","DEBUG")]
+            [String]
+            $Level = "INFO",
+            [Parameter(Mandatory=$True)]
+            [string]
+            $Message,
+            [Parameter(Mandatory=$False)]
+            [string]
+            $logfile
+        )
+
+        $content = "[$Stamp] [$Level] $Message"
+
+        if($logfile)
+        {
+           Add-Content $logfile -Value $content
+        }
+        else
+        {
+            Write-Output $content
+        }
+}
+
+function Get-CurrentLineNumber
+{
+    $MyInvocation.ScriptLineNumber
+}
+    $ScriptDirectory = "{{cache_dir}}\" 
+    $InstallerLogFileName="$ScriptDirectory\networkdrive_check_read_execute.txt"
+
+    $sample = Get-Childitem -Path {{networkdrive_letter}}:\ 
+    Write-Log "INFO" "[$(Get-CurrentLineNumber)] $sample 'File Read and Execute Successfully into Network Drive.' "$InstallerLogFileName""

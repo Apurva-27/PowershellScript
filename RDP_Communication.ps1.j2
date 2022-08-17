@@ -1,0 +1,20 @@
+$val=Test-NetConnection -ComputerName {{Var_RDP_client_ip}} -CommonTCPPort "{{RDP_Protocol}}" -InformationLevel "{{Var_Information_level}}" #Test RDP Connection
+$val >>{{cache_dir}}\{{Var_Verify_RDP_Test_Connection}}	#copy output into log 
+
+if($true -eq $val)
+{
+	#Connect with RDP
+	echo "Remote Desktop connection made is successfull." >>{{cache_dir}}\{{Var_RDP_Connection}}
+	
+	cmdkey /list | ForEach-Object{if($_ -like "*target=TERMSRV/*"){cmdkey /del:($_ -replace " ","" -replace "Target:","")}} >>{{cache_dir}}\{{Var_RDP_Connection}}
+	$Server="{{Var_RDP_client_ip}}"
+	$User="{{Client_user_name}}"
+	$Password="{{Client_user_password}}"
+	cmdkey /generic:TERMSRV/$Server /user:$User /pass:$Password >>{{cache_dir}}\{{Var_RDP_Connection}}
+	mstsc /v:$Server
+    
+}
+else
+{
+    echo "Can not connect with remote desktop." >>{{cache_dir}}\{{Var_RDP_Connection}}
+}
